@@ -61,8 +61,8 @@ setup(
     description="Library that is intended to operate with various process mining tasks.",
     long_description=get_readme_description(),
     long_description_content_type="text/markdown",
-    author="Sberbank Process Mining Team",
-    author_email="spm.ml.team@gmail.com",
+    author="Maximov Pavel, MKB team",
+    author_email="pm291097@list.ru",
     packages=get_packages(),
     include_package_data=True,
     classifiers=[
