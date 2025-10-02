@@ -1,4 +1,4 @@
-![](https://github.com/pm291097/MKB_Process_Mining/blob/main/imgs/Logo.png?raw=true)
+![](https://github.com/pm291097/pm4mkb/blob/main/imgs/Logo.png?raw=true)
 
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pm4mkb)](https://pypi.org/project/pm4mkb)
 [![PyPI - Version](https://img.shields.io/pypi/v/pm4mkb)](https://pypi.org/project/pm4mkb)
@@ -18,7 +18,7 @@ pip install pm4mkb
 ```
 To install from sources:
 ```bash
-git clone https://github.com/pm291097/MKB_Process_Mining.git
+git clone https://github.com/pm291097/pm4mkb.git
 
 cd MKB_Process_Mining
 pip install .
@@ -57,4 +57,4 @@ auto_insights.apply()
 ```
 
 # License
-This project is released under the [MIT License](https://github.com/pm291097/MKB_Process_Mining/blob/main/LICENSE).
+This project is released under the [MIT License](https://github.com/pm291097/pm4mkb/blob/main/LICENSE).

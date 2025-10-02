@@ -24,6 +24,8 @@ class ConformanceAnalyzer:
         self.last_output = None
         self.last_analysis = None
         self.last_case_id = None  # Track the case being analyzed
+        self._last_html = None  # Store HTML for retrieval
+        self.last_output_path = None  # Store output path
     
     def analyze(self,
                 filepath: str,
@@ -103,12 +105,16 @@ class ConformanceAnalyzer:
             self.last_case_id  # Pass case ID
         )
         
+        # Store HTML for later retrieval
+        self._last_html = html
+        
         # Save
         if output_path:
             output_file = Path(output_path)
         else:
             output_file = Path(tempfile.mkdtemp()) / f"conformance_case_{self.last_case_id}.html"
         
+        self.last_output_path = str(output_file)
         output_file.write_text(html, encoding='utf-8')
         self.last_output = str(output_file)
         
@@ -127,7 +133,32 @@ class ConformanceAnalyzer:
         
         return str(output_file)
     
-    def _generate_enhanced_html(self, standard_nodes, standard_edges, 
+    def get_html(self):
+        """Get the last generated HTML content."""
+        if hasattr(self, '_last_html') and self._last_html:
+            return self._last_html
+        elif hasattr(self, 'last_output_path') and self.last_output_path:
+            try:
+                with open(self.last_output_path, 'r', encoding='utf-8') as f:
+                    return f.read()
+            except:
+                pass
+        return None
+    
+    def save_html(self, filepath):
+        """Save the last analysis to HTML file."""
+        html = self.get_html()
+        if html:
+            try:
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    f.write(html)
+                return True
+            except Exception as e:
+                print(f"Error saving HTML: {e}")
+                return False
+        return False
+    
+    def _generate_enhanced_html(self, standard_nodes, standard_edges,
                                 actual_nodes, actual_edges, analysis, standard,
                                 case_id=None):
         """Generate enhanced HTML with categories and case ID."""
