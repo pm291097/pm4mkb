@@ -1,5 +1,6 @@
 """
-Enhanced ConformanceAnalyzer with case ID tracking.
+Enhanced ConformanceAnalyzer with case ID tracking and multiple template support.
+Version 0.1.3 - Support for circular (codes) and rectangular (full text) templates
 """
 
 import json
@@ -12,10 +13,11 @@ from .processors.data_processor import DataProcessor
 from .processors.reference_extractor import ReferenceExtractor
 from .process_standard import ProcessStandard, create_standard_from_data
 from .template_enhanced import ENHANCED_CONFORMANCE_TEMPLATE
+from .template_rectangular import RECTANGULAR_CONFORMANCE_TEMPLATE
 
 
 class ConformanceAnalyzer:
-    """Analyze process conformance with configurable standards."""
+    """Analyze process conformance with configurable standards and templates."""
     
     def __init__(self):
         """Initialize ConformanceAnalyzer."""
@@ -26,6 +28,7 @@ class ConformanceAnalyzer:
         self.last_case_id = None  # Track the case being analyzed
         self._last_html = None  # Store HTML for retrieval
         self.last_output_path = None  # Store output path
+        self.last_template_type = None  # Track which template was used
     
     def analyze(self,
                 filepath: str,
@@ -38,8 +41,48 @@ class ConformanceAnalyzer:
                 remove_patterns: Optional[List[str]] = None,
                 mark_as_optional: Optional[List[str]] = None,
                 output_path: Optional[str] = None,
-                show: bool = True) -> str:
-        """Analyze process conformance with enhanced categorization."""
+                show: bool = True,
+                template_type: str = 'enhanced',
+                activity_codes: Optional[Dict[str, str]] = None) -> str:
+        """
+        Analyze process conformance with enhanced categorization.
+        
+        Parameters:
+        -----------
+        filepath : str
+            Path to data file
+        case_col, activity_col, timestamp_col : Optional[str]
+            Column names (auto-detected if None)
+        case_id : Optional[str]
+            Specific case to analyze
+        standard : Optional[ProcessStandard]
+            Process standard to compare against
+        auto_create_standard : bool
+            Auto-create standard from data if not provided
+        remove_patterns, mark_as_optional : Optional[List[str]]
+            Patterns for standard creation
+        output_path : Optional[str]
+            Where to save HTML output
+        show : bool
+            Whether to open in browser
+        template_type : str
+            'enhanced' for circular nodes with codes/initials (default)
+            'rectangular' for full text with dynamic sizing
+        activity_codes : Optional[Dict[str, str]]
+            Custom activity code mapping for enhanced template
+            Example: {'Идентификация клиента': 'ID', 'Проверка документов': 'CHK'}
+        
+        Returns:
+        --------
+        str : Path to generated HTML file
+        """
+        
+        # Validate template type
+        if template_type not in ['enhanced', 'rectangular']:
+            print(f"Warning: Unknown template type '{template_type}', using 'enhanced'")
+            template_type = 'enhanced'
+        
+        self.last_template_type = template_type
         
         # Load and process data
         df = self.processor.load_file(filepath)
@@ -48,6 +91,7 @@ class ConformanceAnalyzer:
         )
         
         print(f"Using columns: Case={case_col}, Activity={activity_col}, Time={timestamp_col}")
+        print(f"Using template: {template_type}")
         
         case_df = self.processor.process_dataframe(
             df, case_col, activity_col, timestamp_col, case_id
@@ -97,12 +141,14 @@ class ConformanceAnalyzer:
             actual_activities
         )
         
-        # Generate HTML with case ID
-        html = self._generate_enhanced_html(
+        # Generate HTML with selected template
+        html = self._generate_html(
             standard_nodes, standard_edges,
             actual_nodes, actual_edges,
             analysis, standard,
-            self.last_case_id  # Pass case ID
+            self.last_case_id,
+            template_type,
+            activity_codes
         )
         
         # Store HTML for later retrieval
@@ -112,7 +158,8 @@ class ConformanceAnalyzer:
         if output_path:
             output_file = Path(output_path)
         else:
-            output_file = Path(tempfile.mkdtemp()) / f"conformance_case_{self.last_case_id}.html"
+            template_suffix = 'rect' if template_type == 'rectangular' else 'circ'
+            output_file = Path(tempfile.mkdtemp()) / f"conformance_{template_suffix}_case_{self.last_case_id}.html"
         
         self.last_output_path = str(output_file)
         output_file.write_text(html, encoding='utf-8')
@@ -120,6 +167,7 @@ class ConformanceAnalyzer:
         
         # Print summary
         print(f"\nConformance Analysis Complete for Case {self.last_case_id}:")
+        print(f"  Template: {template_type}")
         print(f"  Conformance Level: {analysis['conformance_level']:.1f}%")
         
         for category, count in analysis['category_counts'].items():
@@ -132,6 +180,35 @@ class ConformanceAnalyzer:
             webbrowser.open(f"file://{output_file.absolute()}")
         
         return str(output_file)
+    
+    def analyze_circular(self, filepath: str, activity_codes: Optional[Dict[str, str]] = None, **kwargs) -> str:
+        """
+        Convenience method for circular template with codes.
+        
+        Parameters:
+        -----------
+        filepath : str
+            Path to data file
+        activity_codes : Optional[Dict[str, str]]
+            Custom activity code mapping
+            Example: {'Идентификация клиента': 'ID'}
+        **kwargs : 
+            Other parameters for analyze()
+        """
+        return self.analyze(filepath, template_type='enhanced', activity_codes=activity_codes, **kwargs)
+    
+    def analyze_rectangular(self, filepath: str, **kwargs) -> str:
+        """
+        Convenience method for rectangular template with full text.
+        
+        Parameters:
+        -----------
+        filepath : str
+            Path to data file
+        **kwargs :
+            Other parameters for analyze()
+        """
+        return self.analyze(filepath, template_type='rectangular', **kwargs)
     
     def get_html(self):
         """Get the last generated HTML content."""
@@ -158,10 +235,17 @@ class ConformanceAnalyzer:
                 return False
         return False
     
-    def _generate_enhanced_html(self, standard_nodes, standard_edges,
-                                actual_nodes, actual_edges, analysis, standard,
-                                case_id=None):
-        """Generate enhanced HTML with categories and case ID."""
+    def _generate_html(self, standard_nodes, standard_edges,
+                       actual_nodes, actual_edges, analysis, standard,
+                       case_id=None, template_type='enhanced', 
+                       activity_codes=None):
+        """Generate HTML with selected template."""
+        
+        # Choose template
+        if template_type == 'rectangular':
+            template = RECTANGULAR_CONFORMANCE_TEMPLATE
+        else:
+            template = ENHANCED_CONFORMANCE_TEMPLATE
         
         # Use case ID or default
         display_case_id = str(case_id) if case_id is not None else "Unknown"
@@ -197,24 +281,39 @@ class ConformanceAnalyzer:
             problems_html = '<div class="activity-item">✅ Проблем не обнаружено</div>'
         
         # Replace placeholders
-        html = ENHANCED_CONFORMANCE_TEMPLATE
+        html = template
         html = html.replace('{{CASE_ID}}', display_case_id)
         html = html.replace('{{CONFORMANCE_LEVEL}}', f"{analysis['conformance_level']:.1f}")
         html = html.replace('{{STATISTICS}}', stats_html)
         html = html.replace('{{PROBLEMS}}', problems_html)
         
+        # Add activity codes for enhanced template
+        if template_type == 'enhanced':
+            if activity_codes is None:
+                activity_codes = {}  # Empty dict will trigger automatic initials
+            html = html.replace('{{ACTIVITY_CODES}}', json.dumps(activity_codes, ensure_ascii=False))
+        
         # Add graph data
         standard_data = {'nodes': standard_nodes, 'edges': standard_edges}
         actual_data = {'nodes': actual_nodes, 'edges': actual_edges}
         
-        # Debug: print edge categories to console
-        print(f"\nEdge categories for visualization:")
-        for edge_id, category in analysis['edge_categories'].items():
-            if category in ['deviation', 'forbidden']:
-                print(f"  {edge_id}: {category} (will be RED)")
+        # Debug info
+        print(f"\nTemplate features:")
+        if template_type == 'enhanced':
+            if activity_codes:
+                print(f"  Using custom codes: {len(activity_codes)} mappings")
+            else:
+                print(f"  Using automatic initials (first letter + dot)")
+        else:
+            print(f"  Showing full activity names in rectangles")
         
         html = html.replace('{{STANDARD_DATA}}', json.dumps(standard_data))
         html = html.replace('{{ACTUAL_DATA}}', json.dumps(actual_data))
         html = html.replace('{{EDGE_CATEGORIES}}', json.dumps(analysis['edge_categories']))
         
         return html
+    
+    # Backward compatibility
+    def _generate_enhanced_html(self, *args, **kwargs):
+        """Backward compatibility method."""
+        return self._generate_html(*args, **kwargs)

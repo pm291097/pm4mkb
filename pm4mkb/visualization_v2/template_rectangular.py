@@ -1,9 +1,10 @@
 """
-Enhanced HTML template - Clean with dark logo in header.
-Version 0.1.3 - Support for activity codes mapping and automatic initials
+Rectangular HTML template - Full text with dynamic node sizing.
+Version 0.1.3 - Template for complete activity names with text wrapping
+FIXED: Proper node sizing for both graphs
 """
 
-ENHANCED_CONFORMANCE_TEMPLATE = """<!doctype html>
+RECTANGULAR_CONFORMANCE_TEMPLATE = """<!doctype html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -37,7 +38,7 @@ ENHANCED_CONFORMANCE_TEMPLATE = """<!doctype html>
         
         .header-logo {
             height: 35px;
-            filter: brightness(0) invert(1);  /* Make dark logo white */
+            filter: brightness(0) invert(1);
         }
         
         .header-title {
@@ -240,28 +241,6 @@ ENHANCED_CONFORMANCE_TEMPLATE = """<!doctype html>
             border-top: 1px solid #e0e0e0;
             margin-top: 20px;
         }
-        
-        /* Tooltip styles */
-        .node-tooltip {
-            position: fixed;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            pointer-events: none;
-            z-index: 10000;
-            display: none;
-            max-width: 250px;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .node-tooltip.show {
-            display: block;
-        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.0/cytoscape.min.js"></script>
 </head>
@@ -335,82 +314,70 @@ ENHANCED_CONFORMANCE_TEMPLATE = """<!doctype html>
         </div>
     </div>
     
-    <!-- Tooltip element -->
-    <div id="node-tooltip" class="node-tooltip"></div>
-    
     <script>
         const standardData = {{STANDARD_DATA}};
         const actualData = {{ACTUAL_DATA}};
         const edgeCategories = {{EDGE_CATEGORIES}};
         
-        // Activity codes mapping - will be replaced during generation
-        const activityCodes = {{ACTIVITY_CODES}};
+        console.log('PM4MKB v0.1.3: Rectangular template with full text...');
         
-        console.log('PM4MKB v0.1.3: Initializing with activity codes...');
-        
-        // Function to get activity code or initial
-        const getActivityCode = (label) => {
-            // Check if custom code exists
-            if (activityCodes && activityCodes[label]) {
-                return activityCodes[label];
-            }
+        // Calculate dynamic node dimensions based on text length
+        const calculateNodeDimensions = (label) => {
+            if (!label) return { width: 100, height: 50 };
             
-            // Fallback to first letter + dot
-            if (label && label.length > 0) {
-                // Handle special cases
-                if (label.startsWith('PAUSE')) {
-                    return 'P.';
-                }
-                if (label.startsWith('ERROR')) {
-                    return 'E!';
-                }
-                
-                // Get first letter and add dot
-                const firstChar = label.charAt(0).toUpperCase();
-                return firstChar + '.';
-            }
+            const charWidth = 7;
+            const lineHeight = 16;
+            const paddingH = 20;
+            const paddingV = 14;
+            const maxWidth = 200;
+            const minWidth = 100;
             
-            return label;
+            // Calculate required width
+            let requiredWidth = label.length * charWidth + paddingH;
+            let width = Math.min(maxWidth, Math.max(minWidth, requiredWidth));
+            
+            // Calculate number of lines needed
+            const charsPerLine = Math.floor((width - paddingH) / charWidth);
+            const lines = Math.ceil(label.length / charsPerLine);
+            
+            // Calculate height based on number of lines
+            let height = lines * lineHeight + paddingV;
+            height = Math.max(50, Math.min(120, height));
+            
+            return { width, height };
         };
         
-        // Process node data to add codes
-        const processNodeData = (data) => {
-            if (data.nodes) {
-                data.nodes.forEach(node => {
-                    if (node.data && node.data.label) {
-                        // Store original label
-                        node.data.fullLabel = node.data.label;
-                        // Create code or initial
-                        const code = getActivityCode(node.data.label);
-                        // Only use code if it's different from full label
-                        if (code !== node.data.label) {
-                            node.data.label = code;
-                        }
-                    }
-                });
-            }
-            return data;
-        };
-        
-        // Process data to add codes
-        const processedStandardData = processNodeData(JSON.parse(JSON.stringify(standardData)));
-        const processedActualData = processNodeData(JSON.parse(JSON.stringify(actualData)));
-        
+        // Style configuration for rectangular nodes
         const graphStyle = [
             {
                 selector: 'node',
                 style: {
+                    'shape': 'roundrectangle',
                     'label': 'data(label)',
                     'text-valign': 'center',
                     'text-halign': 'center',
+                    'text-wrap': 'wrap',
+                    'text-max-width': function(ele) {
+                        const width = ele.data('width') || 100;
+                        return (width - 15) + 'px';
+                    },
+                    'width': function(ele) {
+                        const label = ele.data('label');
+                        const dims = calculateNodeDimensions(label);
+                        return dims.width;
+                    },
+                    'height': function(ele) {
+                        const label = ele.data('label');
+                        const dims = calculateNodeDimensions(label);
+                        return dims.height;
+                    },
                     'background-color': '#3498db',
                     'color': '#fff',
-                    'width': 50,
-                    'height': 50,
-                    'font-size': '14px',
-                    'font-weight': 'bold',
+                    'font-size': '11px',
+                    'font-weight': '500',
                     'border-width': 2,
-                    'border-color': '#2980b9'
+                    'border-color': '#2980b9',
+                    'padding': '5px'
                 }
             },
             {
@@ -420,7 +387,8 @@ ENHANCED_CONFORMANCE_TEMPLATE = """<!doctype html>
                     'line-color': '#95a5a6',
                     'target-arrow-color': '#95a5a6',
                     'target-arrow-shape': 'triangle',
-                    'curve-style': 'bezier'
+                    'curve-style': 'bezier',
+                    'arrow-scale': 1.2
                 }
             },
             {
@@ -468,71 +436,41 @@ ENHANCED_CONFORMANCE_TEMPLATE = """<!doctype html>
             }
         ];
         
-        // Tooltip element
-        const tooltip = document.getElementById('node-tooltip');
-        
-        // Function to add tooltip handlers
-        const addTooltipHandlers = (cy) => {
-            cy.on('mouseover', 'node', function(event) {
-                const node = event.target;
-                const fullLabel = node.data('fullLabel');
-                const shortLabel = node.data('label');
-                
-                // Show tooltip with full label if it exists and differs
-                if (fullLabel && fullLabel !== shortLabel) {
-                    tooltip.textContent = fullLabel;
-                    tooltip.classList.add('show');
-                    
-                    // Position tooltip above node
-                    const renderedPos = node.renderedPosition();
-                    const container = cy.container().getBoundingClientRect();
-                    
-                    tooltip.style.left = (container.left + renderedPos.x - tooltip.offsetWidth / 2) + 'px';
-                    tooltip.style.top = (container.top + renderedPos.y - 45) + 'px';
-                }
-            });
-            
-            cy.on('mouseout', 'node', function() {
-                tooltip.classList.remove('show');
-            });
-            
-            // Hide tooltip when panning or zooming
-            cy.on('pan zoom', function() {
-                tooltip.classList.remove('show');
-            });
-        };
-        
+        // Initialize standard graph
         const cyStandard = cytoscape({
             container: document.getElementById('cy-standard'),
-            elements: processedStandardData,
+            elements: standardData,
             style: graphStyle,
             layout: {
                 name: 'breadthfirst',
                 directed: true,
-                spacingFactor: 1.5,
+                spacingFactor: 1.8,
+                nodeDimensionsIncludeLabels: true,
                 fit: true,
                 padding: 30
-            }
+            },
+            wheelSensitivity: 0.2
         });
         
+        // Initialize actual graph
         const cyActual = cytoscape({
             container: document.getElementById('cy-actual'),
-            elements: processedActualData,
+            elements: actualData,
             style: graphStyle,
             layout: {
                 name: 'breadthfirst',
                 directed: true,
-                spacingFactor: 1.5,
+                spacingFactor: 1.8,
+                nodeDimensionsIncludeLabels: true,
                 fit: true,
                 padding: 30
-            }
+            },
+            wheelSensitivity: 0.2
         });
         
-        // Add tooltip handlers to both graphs
-        addTooltipHandlers(cyStandard);
-        addTooltipHandlers(cyActual);
-        
+        // Apply edge categories AFTER initialization
         cyActual.ready(function() {
+            // Apply edge categories for coloring
             for (const [edgeId, category] of Object.entries(edgeCategories)) {
                 const edges = cyActual.edges().filter(function(edge) {
                     return edge.id() === edgeId || 
@@ -546,6 +484,10 @@ ENHANCED_CONFORMANCE_TEMPLATE = """<!doctype html>
             
             cyActual.style().update();
         });
+        
+        console.log('Rectangular template initialized');
+        console.log('Standard nodes:', cyStandard.nodes().length);
+        console.log('Actual nodes:', cyActual.nodes().length);
     </script>
 </body>
 </html>"""
