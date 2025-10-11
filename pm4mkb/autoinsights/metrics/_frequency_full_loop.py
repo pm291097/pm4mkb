@@ -11,7 +11,7 @@ from ._base import LoopMetric
 if TYPE_CHECKING:
     from numpy import float64
     from pandas import DataFrame
-    from sberpm import DataHolder
+    from pm4mkb.baza import DataHolder
 
 
 class ArbitraryLoop(LoopMetric):

@@ -1,6 +1,6 @@
-Metadata-Version: 0.1
+Metadata-Version: 0.2
 Name: pm4mkb
-Version: 0.1.2
+Version: 0.1.4
 Summary: Library that is intended to operate with various process mining tasks.
 Author: MKB DVA Team
 Author-email: pm291097@list.ru

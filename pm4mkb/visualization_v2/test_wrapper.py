@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 # Add PM4MKB to path
-sys.path.insert(0, str(Path(r"C:\Users\polos\Downloads\sberpm-3.4.0\sberpm-3.4.0")))
 
 def test_graphviz_wrapper():
     """Test the GraphvizWrapper implementation."""

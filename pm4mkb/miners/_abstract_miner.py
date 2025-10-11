@@ -28,15 +28,15 @@ class AbstractMiner:
 
     Parameters
     ----------
-    data_holder : sberpm.DataHolder
+    data_holder : pm4mkb.baza.DataHolder
         Object that contains the event log and the names of its necessary columns.
 
     Attributes
     ----------
-    data_holder : sberpm.DataHolder
+    data_holder : pm4mkb.baza.DataHolder
         Object that contains the event log and the names of its necessary columns.
 
-    graph: sberpm.visual._graph.Graph
+    graph: pm4mkb.visual._graph.Graph
         Mined graph of the process.
     """
 
@@ -140,7 +140,7 @@ class AbstractMiner:
 
         Parameters
         ----------
-        graph: sberpm.visual._graph.Graph
+        graph: pm4mkb.visual._graph.Graph
             Graph.
 
         activities: list of str
@@ -157,7 +157,7 @@ class AbstractMiner:
 
         Parameters
         ----------
-        graph: sberpm.visual._graph.Graph
+        graph: pm4mkb.visual._graph.Graph
             Graph.
 
         first_activities: list of str

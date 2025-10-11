@@ -28,7 +28,7 @@ sys.meta_path.insert(0, PymorphyRedirector())
 # * NO tensorflow logging
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-# * sberpm imports
+# * pm4mkb imports
 from . import _logging_init  # noqa: F401,E402
 from ._version import __version__  # noqa: E402
 from .baza import DataHolder, DurationUnits, SuccessInputs, TimeErrors  # noqa: E402

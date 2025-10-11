@@ -13,7 +13,7 @@ from ._base import Metric
 
 if TYPE_CHECKING:
     from numpy import float64
-    from sberpm import DataHolder
+    from pm4mkb.baza import DataHolder
 
 
 class OperationBottleneck(Metric):

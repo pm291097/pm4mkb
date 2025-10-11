@@ -12,7 +12,7 @@ from pm4mkb.metrics._utils import round_decorator
 
 
 if TYPE_CHECKING:
-    from sberpm import DataHolder
+    from pm4mkb.baza import DataHolder
 
 
 class AvailableMetrics(Enum):

@@ -68,7 +68,7 @@ class ChartPainter:
 
     Parameters
     ----------
-    data: pandas.DataFrame or sberpm.DataHolder or sberpm.metrics instance
+    data: pandas.DataFrame or pm4mkb.baza.DataHolder or pm4mkb.metrics instance
         Data to use for visualization.
 
     template: str, default='plotly'
@@ -1773,7 +1773,7 @@ class ChartPainter:
             See 'plotly.graph_objects.Sankey' for other possible arguments.
         """
         if not isinstance(self._dh, DataHolder):
-            raise TypeError("Input data must be given as a sberpm.DataHolder")
+            raise TypeError("Input data must be given as a pm4mkb.baza.DataHolder")
 
         top_traces = (
             TraceMetric(self._dh).calc_metrics(*["count", "ids"]).sort_values("count", ascending=False).head(n)

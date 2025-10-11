@@ -6,7 +6,7 @@ from pandas import DataFrame, concat, pivot_table
 
 
 if TYPE_CHECKING:
-    from sberpm import DataHolder
+    from pm4mkb.baza import DataHolder
 
 
 class InfluencingActivities:

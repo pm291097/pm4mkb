@@ -36,7 +36,7 @@ class AlphaMiner(AbstractMiner):
     Examples
     --------
     >>> import pandas as pd
-    >>> from sberpm import DataHolder
+    >>> from pm4mkb.baza import DataHolder
     >>> from pm4mkb.miners import AlphaMiner
     >>>
     >>> # Create data_holder

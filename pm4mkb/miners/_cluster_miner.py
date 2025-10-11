@@ -3,7 +3,7 @@ from __future__ import annotations
 from pandas import Series, DataFrame, merge
 from loguru import logger
 
-from sberpm import DataHolder
+from pm4mkb.baza import DataHolder
 from pm4mkb.miners._abstract_miner import AbstractMiner
 from pm4mkb.visual._graph import create_dfg
 from pm4mkb.metrics import TransitionMetric, ActivityMetric

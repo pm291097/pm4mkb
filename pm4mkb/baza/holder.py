@@ -38,7 +38,7 @@ class DataHolder:
 
     In a nutshell, `DataHolder` is a flexible container class for:
         1. Preparing raw Process Mining log data into a structured dataset
-            ready for analyzing with most of sberpm's Data Science algorithms.
+            ready for analyzing with most of pm4mkb's Data Science algorithms.
         2. Holding the structured data
         3. Extracting certain properties of the data, related to Process Mining tasks,
             and manipulating the data to some extent.
@@ -361,7 +361,7 @@ class DataHolder:
     --------
     To initialize a `DataHolder` with minimal information:
     >>> from pandas import DataFrame
-    >>> from sberpm import DataHolder
+    >>> from pm4mkb.baza import DataHolder
     >>>
     >>> event_log_data = DataFrame(...)
     >>> data_holder = DataHolder(event_log_data, col_case="case_id")

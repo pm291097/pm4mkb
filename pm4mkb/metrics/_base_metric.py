@@ -11,7 +11,7 @@ class BaseMetric:
 
     Parameters
     ----------
-    data_holder : sberpm.DataHolder
+    data_holder : pm4mkb.baza.DataHolder
         Object that contains the event log and the names of its necessary columns.
 
     time_unit : {'s'/'second', 'm'/'minute', 'h'/'hour', 'd'/'day', 'w'/'week'}

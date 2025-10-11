@@ -126,7 +126,7 @@ class GraphvizPainter:
     Examples
     --------
     >>> import pandas as pd
-    >>> from sberpm import DataHolder
+    >>> from pm4mkb.baza import DataHolder
     >>> from pm4mkb.miners import HeuMiner
     >>> from pm4mkb.visual import GraphvizPainter
     >>>

@@ -18,7 +18,7 @@ from .metrics._annotations import COLUMNS
 from .text_data import get_mistake_lemmas_path, get_reversal_lemmas_path
 
 if TYPE_CHECKING:
-    from sberpm import DataHolder
+    from pm4mkb.baza import DataHolder
 
     from .metrics._base import Metric
 
@@ -422,7 +422,7 @@ class AutoInsights:
         success_activity : Union[str, int, float]
             User input for success_activity
         dh : DataHolder
-            sberPM DataHolder
+            pm4mkb DataHolder
 
         Returns
         -------
@@ -457,7 +457,7 @@ class AutoInsights:
         start_activity : Union[str, int, float]
             User input for start_activity
         dh : DataHolder
-            sberPM DataHolder
+            pm4mkb DataHolder
 
         Returns
         -------

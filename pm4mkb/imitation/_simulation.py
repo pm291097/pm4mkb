@@ -741,7 +741,7 @@ class Simulation:
 
     def compute_metric(self, target="activity"):
         """
-        Calculates metric (transition, activity or trace), used sberpm functional
+        Calculates metric (transition, activity or trace), used pm4mkb functional
 
         Parameters
         ----------

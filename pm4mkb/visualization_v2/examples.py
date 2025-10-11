@@ -7,7 +7,6 @@ from pathlib import Path
 import pandas as pd
 
 # Add PM4MKB to path
-sys.path.insert(0, str(Path(r"C:\Users\polos\Downloads\sberpm-3.4.0\sberpm-3.4.0")))
 
 def example_basic_dfg():
     """Example: Create a basic DFG visualization."""

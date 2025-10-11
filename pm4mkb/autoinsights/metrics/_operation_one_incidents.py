@@ -14,7 +14,7 @@ from ._base import Metric
 
 
 if TYPE_CHECKING:
-    from sberpm import DataHolder
+    from pm4mkb.baza import DataHolder
 
 
 class OperationOneIncidents(Metric):

@@ -16,7 +16,7 @@ class HeuMiner(AbstractMiner):
 
     Parameters
     ----------
-    data_holder : sberpm.DataHolder
+    data_holder : pm4mkb.baza.DataHolder
         Object that contains the event log and the names of its necessary columns.
 
     threshold : float, default=0.8
@@ -52,7 +52,7 @@ class HeuMiner(AbstractMiner):
     Examples
     --------
     >>> import pandas as pd
-    >>> from sberpm import DataHolder
+    >>> from pm4mkb.baza import DataHolder
     >>> from pm4mkb.miners import HeuMiner
     >>>
     >>> df = DataFrame({
@@ -208,7 +208,7 @@ def heu_miner(data_holder: DataHolder, threshold: float = 0.8) -> Graph:
 
     Parameters
     ----------
-    data_holder : sberpm.DataHolder
+    data_holder : pm4mkb.baza.DataHolder
         Object that contains the event log and the names of its necessary columns.
 
     threshold : float, default=0.8
